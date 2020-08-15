@@ -48,6 +48,20 @@
         regexp: '^#?PermitRootLogin'
         line: 'PermitRootLogin prohibit-password'
 
+    - name: Disable password authentication in general
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        state: present
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+
+    - name: Change SSH port
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        state: present
+        regexp: '^#?Port'
+        line: 'Port {{ ssh_port }}'
+
 # Install Packages
     - name: Update apt
       apt: update_cache=yes
@@ -56,13 +70,46 @@
       apt: name={{ sys_packages }} state=latest
 
 # UFW Setup
-    - name: UFW - Allow SSH connections
+    - name: UFW - Allow SSH connections on a custom port
       ufw:
         rule: allow
-        name: OpenSSH
+        port: '{{ ssh_port }}'
+        proto: tcp
+    - name: UFW - Limit the number of possible requests
+      ufw:
+        rule: limit
+        port: '{{ ssh_port }}'
+        proto: tcp
 
     - name: UFW - Deny all other incoming traffic by default
       ufw:
         state: enabled
         policy: deny
         direction: incoming
+
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: restarted
+
+# Unattended Upgrades
+    - name: Install unattended-upgrades package
+      apt:
+        name: "unattended-upgrades"
+        state: present
+
+    - name: Create apt auto-upgrades configuration
+      template:
+        src: files/20auto-upgrades.j2
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Create apt unattended-upgrades configuration
+      template:
+        src: files/50unattended-upgrades.j2
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        owner: root
+        group: root
+        mode: 0644
