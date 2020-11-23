@@ -80,6 +80,16 @@
         rule: limit
         port: '{{ ssh_port }}'
         proto: tcp
+    - name: UFW - Allow HTTP connections
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+    - name: UFW - Allow HTTPS connections
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
 
     - name: UFW - Deny all other incoming traffic by default
       ufw:
