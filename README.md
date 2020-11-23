@@ -11,6 +11,13 @@ A collection of minimalist Ansible playbooks for automating server setups, based
 
 _\*the Initial Server Setup should be your starting point for fresh servers._
 
+The relevant configuration for ansible is located at /etc/ansible/hosts.
+To ping all hosts for testing:
+
+```
+ansible all -m ping -u root --private-key ~/.ssh/id_rsa
+```
+
 ## Playbook Structure
 
 The playbooks contained in this repository were created for educational purposes, and should serve as a base for you to create your own playbooks and roles.

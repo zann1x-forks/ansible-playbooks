@@ -26,17 +26,7 @@ cd ansible-playbooks/setup_ubuntu1804
 ### 2. Customize Options
 
 ```shell
-nano vars/default.yml
-```
-
-```yml
-#vars/default.yml
----
-create_user: lukas
-copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-sys_packages: [ 'curl', 'vim', 'git', 'ufw']
-ssh_port: 22
-unattended_upgrade_error_mail: name@example.com
+vim vars/default.yml
 ```
 
 ### 3. Run the Playbook
